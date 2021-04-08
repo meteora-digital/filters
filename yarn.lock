@@ -824,11 +824,6 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@meteora-digital/helpers@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@meteora-digital/helpers/-/helpers-1.4.1.tgz#688c5d0c496913a2375b507f0e49ae79106b8285"
-  integrity sha512-m0ufGjbA8guywKWZoHR8Zhf498zs+8uCcWxDFQp0tidBN0kahVx9TlBcsG2D6D1hiIbhfZaIVnZxaRIdWO90pA==
-
 ansi-colors@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ansi-colors/-/ansi-colors-1.1.0.tgz#6374b4dd5d4718ff3ce27a671a3b1cad077132a9"
@@ -2292,6 +2287,11 @@ matchdep@^2.0.0:
     micromatch "^3.0.4"
     resolve "^1.4.0"
     stack-trace "0.0.10"
+
+meteora@latest:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/meteora/-/meteora-0.0.3.tgz#6276151fa2fc3895e4c33968f7f02f841251ee40"
+  integrity sha512-paQzQd6xyEFPbQ/zCbGWbas1IyQwv2umDhjJsWGnfQLsfKrQSWFcxfTrt0tAqWyLWy3BjRR9HespJFv4+SZ4yQ==
 
 micromatch@^3.0.4, micromatch@^3.1.10, micromatch@^3.1.4:
   version "3.1.10"
