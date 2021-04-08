@@ -44,6 +44,15 @@ var Filters = /*#__PURE__*/function () {
   }
 
   _createClass(Filters, [{
+    key: "set",
+    value: function set() {
+      var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      // Set / reset the parameter in the filters object
+      this.filters[data.parameter] = []; // Call the add function to add the new data to the filters object
+
+      this.add(data);
+    }
+  }, {
     key: "add",
     value: function add() {
       var _this = this;

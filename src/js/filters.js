@@ -37,6 +37,13 @@ export default class Filters {
     }
   }
 
+  set(data = {}) {
+    // Set / reset the parameter in the filters object
+    this.filters[data.parameter] = [];
+    // Call the add function to add the new data to the filters object
+    this.add(data);
+  }
+
   add(data = {}) {
     // If we dont have this parameter yet, create it as an array
     if (this.filters[data.parameter] == undefined) this.filters[data.parameter] = [];

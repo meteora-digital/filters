@@ -50,7 +50,18 @@ document.querySelector('.js-filter--select').addEventListener('change', () => {
 
 ```add```
 
-Add data to the filters object
+This will remove any other values in this paramter and set the a specific value in the filters object.
+
+```javascript
+myFilter.set({
+	parameter: 'colour',
+	value: 'red',
+});
+```
+
+```add```
+
+Add more values to the filters object
 
 ```javascript
 myFilter.add({
