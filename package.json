@@ -4,7 +4,7 @@
   "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An ajax (No this doesn't use jQuery) request will be sent in the form of URL parameters, the response will be returned to the gobal scope.",
   "main": "dist/js/filters.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\""
+    "test": "npm i && gulp"
   },
   "keywords": [
     "JavaScript",
