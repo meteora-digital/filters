@@ -20,8 +20,6 @@ export default class Filters {
     this.api = {};
     // Where we will store the filter parameters
     this.filters = {};
-    // Will be used to throttle our filter
-    this.timeout = null;
 
     // Our user settings
     this.settings = {
@@ -89,17 +87,18 @@ export default class Filters {
   }
 
   apply() {
-    // Stop the current filter
-    clearTimeout(this.timeout);
-
     // Start the filter function
-    this.timeout = setTimeout(() => {
+    return new Promise((resolve, reject) => {
       ajax({
         url: this.updateAPI().url,
         method: 'GET',
-        success: (response) => this.settings.success(response),
-      })
-    }, 1000);
+        error: (response) => reject(response),
+        success: (response) => {
+          this.settings.success(response);
+          resolve(response);
+        },
+      });
+    })
   }
 
   updateAPI() {

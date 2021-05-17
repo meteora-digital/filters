@@ -25,9 +25,7 @@ var Filters = /*#__PURE__*/function () {
     // This will be used for out URL creation
     this.api = {}; // Where we will store the filter parameters
 
-    this.filters = {}; // Will be used to throttle our filter
-
-    this.timeout = null; // Our user settings
+    this.filters = {}; // Our user settings
 
     this.settings = {
       api: '/',
@@ -114,18 +112,21 @@ var Filters = /*#__PURE__*/function () {
     value: function apply() {
       var _this3 = this;
 
-      // Stop the current filter
-      clearTimeout(this.timeout); // Start the filter function
-
-      this.timeout = setTimeout(function () {
+      // Start the filter function
+      return new Promise(function (resolve, reject) {
         (0, _meteora.ajax)({
           url: _this3.updateAPI().url,
           method: 'GET',
+          error: function error(response) {
+            return reject(response);
+          },
           success: function success(response) {
-            return _this3.settings.success(response);
+            _this3.settings.success(response);
+
+            resolve(response);
           }
         });
-      }, 1000);
+      });
     }
   }, {
     key: "updateAPI",
