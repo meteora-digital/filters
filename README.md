@@ -4,9 +4,8 @@ This will act as our filtering engine. We will pass in filters, Then call apply(
 
 ## Installation
 
-with webpack
-
 ```bash
+npm i @meteora-digital/filters
 yarn add @meteora-digital/filters
 ```
 
@@ -26,16 +25,16 @@ yarn add @meteora-digital/filters
 import Filters from '@meteora-digital/filters';
 
 const myFilter = new Filter({
-	success: (response) => {
-		console.log(response);
-	}
+  success: (response) => {
+    console.log(response);
+  }
 });
 
 document.querySelector('.js-filter--select').addEventListener('change', () => {
-	myFilter.add({
-		parameter: select.getAttribute('data-parameter'),
-		value: select.value,
-	});
+  myFilter.add({
+    parameter: select.getAttribute('data-parameter'),
+    value: select.value,
+  });
 });
 ```
 
@@ -48,14 +47,14 @@ document.querySelector('.js-filter--select').addEventListener('change', () => {
 
 ## Methods
 
-```add```
+```set```
 
-This will remove any other values in this paramter and set the a specific value in the filters object.
+This will remove any current values in this parameter and set it to a specific value in the filters object.
 
 ```javascript
 myFilter.set({
-	parameter: 'colour',
-	value: 'red',
+  parameter: 'colour',
+  value: 'purple',
 });
 ```
 
@@ -65,8 +64,8 @@ Add more values to the filters object
 
 ```javascript
 myFilter.add({
-	parameter: 'colour',
-	value: 'red',
+  parameter: 'colour',
+  value: 'purple',
 });
 ```
 
@@ -76,8 +75,8 @@ Remove data from the filters object
 
 ```javascript
 myFilter.remove({
-	parameter: 'colour',
-	value: 'red',
+  parameter: 'colour',
+  value: 'purple',
 });
 ```
 

@@ -37,7 +37,7 @@ var Filters = /*#__PURE__*/function () {
 
     for (var key in this.settings) {
       // Just check if the key exists in the user's options and if it does override the defaults
-      if (options[key] != undefined) this.settings[key] = options[key];
+      if (this.settings.hasOwnProperty(key) && options.hasOwnProperty(key)) this.settings[key] = options[key];
     }
   }
 
