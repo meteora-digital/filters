@@ -1,6 +1,8 @@
 # Filters
 
-This will act as our filtering engine. We will pass in filters, Then call apply(). An ajax (No this doesn't use jQuery) request will be sent in the form of URL parameters, the response will be returned to the gobal scope.
+A class to make ajax (no jquery) requests super easy
+
+#### Note: version 1.0.0 includes breaking changes since the previous beta version 0.1.1
 
 ## Installation
 
@@ -12,7 +14,7 @@ yarn add @meteora-digital/filters
 ## Usage
 
 ```html
-<select name="colours" id="colours" class="[ js-filter--select ]" data-parameter="colours">
+<select name="colours" id="colours">
     <option value="red">red</option>
     <option value="blue">blue</option>
     <option value="green">green</option>
@@ -31,10 +33,7 @@ const myFilter = new Filter({
 });
 
 document.querySelector('.js-filter--select').addEventListener('change', () => {
-  myFilter.add({
-    parameter: select.getAttribute('data-parameter'),
-    value: select.value,
-  });
+  myFilter.set(select.name, select.value);
 });
 ```
 
@@ -47,15 +46,19 @@ document.querySelector('.js-filter--select').addEventListener('change', () => {
 
 ## Methods
 
+First argument should either be an object or a string. The second argument will only be used if the first argument is a string.
+The second argument can either be a string or an array of strings.
+
 ```set```
 
-This will remove any current values in this parameter and set it to a specific value in the filters object.
+This will remove any current values in this parameter and set it to a specific value in the value object.
 
 ```javascript
 myFilter.set({
-  parameter: 'colour',
-  value: 'purple',
+  colour: ['purple', 'red', 'blue'],
 });
+
+myFilter.set('colour', ['purple', 'red', 'blue']);
 ```
 
 ```add```
@@ -64,9 +67,10 @@ Add more values to the filters object
 
 ```javascript
 myFilter.add({
-  parameter: 'colour',
-  value: 'purple',
+  colour: 'green',
 });
+
+myFilter.add('colour', 'green');
 ```
 
 ```remove```
@@ -74,10 +78,11 @@ myFilter.add({
 Remove data from the filters object
 
 ```javascript
-myFilter.remove({
-  parameter: 'colour',
-  value: 'purple',
+myFilter.add({
+  colour: 'red',
 });
+
+myFilter.add('colour', 'red');
 ```
 
 ```clear```

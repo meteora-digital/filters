@@ -19,7 +19,7 @@ export default class Filters {
     // This will be used for out URL creation
     this.api = {};
     // Where we will store the filter parameters
-    this.filters = {};
+    this.value = {};
 
     // Our user settings
     this.settings = {
@@ -35,55 +35,73 @@ export default class Filters {
     }
   }
 
-  set(data = {}) {
-    // Set / reset the parameter in the filters object
-    this.filters[data.parameter] = [];
-    // Call the add function to add the new data to the filters object
-    this.add(data);
-  }
-
-  add(data = {}) {
-    // If we dont have this parameter yet, create it as an array
-    if (this.filters[data.parameter] == undefined) this.filters[data.parameter] = [];
-
-    // If our value is an array
-    if (Array.isArray(data.value)) {
-      // Loop the value array
-      data.value.forEach((value) => {
-        // If the filter parameter value does not contain this value, then add it
-        if (this.filters[data.parameter].indexOf(value) == -1) this.filters[data.parameter].push(value);
-      });
-    }else {
-      // If the parameter value is not an array
-      // Simply push the value to the filter
-      if (this.filters[data.parameter].indexOf(data.value) == -1) this.filters[data.parameter].push(data.value);
+  set(parameter = {}, value = null) {
+    if (typeof parameter === 'string' || typeof parameter === 'number') {
+      // Reset the value of the parameter
+      this.value[parameter] = [];
+      this.add(parameter, value);
+    } else {
+      for (let key in parameter) {
+        if (parameter.hasOwnProperty(key)) this.set(key, parameter[key]);
+      }
     }
   }
 
-  remove(data = {}) {
-    // If we dont have this parameter yet, exit the function, nothing else to do
-    if (this.filters[data.parameter] == undefined) return;
+  add(parameter = {}, value = null) {
+    if (typeof parameter === 'string' || typeof parameter === 'number') {
+      // If we dont have this parameter yet, create it as an array
+      if (this.value[parameter] == undefined) this.value[parameter] = [];
+        
+      if (Array.isArray(value)) {
+        value.forEach((value) => {
+          // If the filter parameter value does not contain this value, then add it
+          if (this.value[parameter].indexOf(value) == -1) this.value[parameter].push(value);
+        });
+      } else {
+        // If the parameter value is not an array
+        // Simply push the value to the filter
+        if (this.value[parameter].indexOf(value) == -1) this.value[parameter].push(value);
+      }
+    } else {
+      for (let key in parameter) {
+        if (parameter.hasOwnProperty(key)) this.add(key, parameter[key]);
+      }
+    }
+  }
 
-    // If our value is an array
-    if (Array.isArray(data.value)) {
-      // Loop the value array
-      data.value.forEach((value) => {
-        // If the filter parameter value contains this value, then remove it
-        if (this.filters[data.parameter].indexOf(value) >= 0) this.filters[data.parameter] = this.filters[data.parameter].filter((item) => item != value);
-      });
-    }else {
-      // If the parameter value is not an array
-      // Simply remove the value from the filter
-      if (this.filters[data.parameter].indexOf(data.value) >= 0) this.filters[data.parameter] = this.filters[data.parameter].filter((item) => item != data.value);
+  remove(parameter = {}, value = null) {
+    if (typeof parameter === 'string' || typeof parameter === 'number') {
+      if (this.value[parameter] && Array.isArray(value)) {
+        for (let index = 0; index < value.length; index++) {
+          console.log(value[index]);
+          this.remove(parameter, value[index]);
+        }
+      }
+
+      else if (this.value[parameter] && this.value[parameter].indexOf(value) >= 0) {
+        // Remove this value from the parameter array
+        this.value[parameter].splice(this.value[parameter].indexOf(value), 1);
+
+        // If the parameter array is empty, delete it
+        if (this.value[parameter].length === 0) delete this.value[parameter];
+      }
+
+      else if (this.value[parameter]) {
+        // Remove the parameter
+        delete this.value[parameter];
+      }
     }
 
-    // If there are no filter values left, delete the parameter
-    if (this.filters[data.parameter].length === 0) delete this.filters[data.parameter];
+    else {
+      for (let key in parameter) {
+        if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
+      }
+    }
   }
 
   clear() {
-    // Loop all the filters and delete them
-    for (let key in this.filters) delete this.filters[key];
+    // Clear all filters
+    this.value = {};
   }
 
   apply() {
@@ -112,16 +130,16 @@ export default class Filters {
     this.api.segmentURL = window.location.origin + window.location.pathname;
 
     // Generate the URL based on the current filters
-    for (let key in this.filters) {
+    for (let key in this.value) {
       // Determine which prefix to use
       this.api.prefix = (this.api.index === 0) ? '?' : '&';
 
       // If we have a value for a given parameter
-      if (this.filters[key].length) {
+      if (this.value[key].length) {
         // Create an api URL
-        this.api.url += `${this.api.prefix + key}=${this.filters[key].join(',')}`;
+        this.api.url += `${this.api.prefix + key}=${this.value[key].join(',')}`;
         // Create a prettier URL
-        this.api.segmentURL += `${this.api.prefix + key}=${this.filters[key].join(',')}`;
+        this.api.segmentURL += `${this.api.prefix + key}=${this.value[key].join(',')}`;
         // Add 1 to our index
         this.api.index += 1;
       };
