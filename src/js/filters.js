@@ -92,10 +92,18 @@ export default class Filters {
       }
     }
 
-    else {
-      for (let key in parameter) {
-        if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
+    else if (Array.isArray(parameter)) {
+      for (let index = 0; index < parameter.length; index++) {
+        delete this.value[parameter[index]];
       }
+    }
+
+    else {
+      try {
+        for (let key in parameter) {
+          if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
+        }
+      } catch(err) { console.log(err) }
     }
   }
 
@@ -105,21 +113,6 @@ export default class Filters {
   }
 
   apply() {
-    // Start the filter function
-    return new Promise((resolve, reject) => {
-      ajax({
-        url: this.updateAPI().url,
-        method: 'GET',
-        error: (response) => reject(response),
-        success: (response) => {
-          this.settings.success(response);
-          resolve(response);
-        },
-      });
-    })
-  }
-
-  updateAPI() {
     // Used to begin the URL parameters
     this.api.prefix = '?';
     // Used to save our default api URL
@@ -145,11 +138,21 @@ export default class Filters {
       };
     }
 
-    // Return the API
-    return this.api;
+    // Start the filter function
+    return new Promise((resolve, reject) => {
+      ajax({
+        url: this.api.url,
+        method: 'GET',
+        error: (response) => reject(response),
+        success: (response) => {
+          this.settings.success(response);
+          resolve(response);
+        },
+      });
+    })
   }
 
   updateURL(url) {
-    window.history.replaceState({}, "filters", url);
+    window.history.replaceState({}, "filters", url || this.api.segmentURL);
   }
 }

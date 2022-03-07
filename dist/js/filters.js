@@ -106,9 +106,17 @@ var Filters = /*#__PURE__*/function () {
           // Remove the parameter
           delete this.value[parameter];
         }
+      } else if (Array.isArray(parameter)) {
+        for (var _index = 0; _index < parameter.length; _index++) {
+          delete this.value[parameter[_index]];
+        }
       } else {
-        for (var key in parameter) {
-          if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
+        try {
+          for (var key in parameter) {
+            if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
+          }
+        } catch (err) {
+          console.log(err);
         }
       }
     }
@@ -123,25 +131,6 @@ var Filters = /*#__PURE__*/function () {
     value: function apply() {
       var _this2 = this;
 
-      // Start the filter function
-      return new Promise(function (resolve, reject) {
-        (0, _meteora.ajax)({
-          url: _this2.updateAPI().url,
-          method: 'GET',
-          error: function error(response) {
-            return reject(response);
-          },
-          success: function success(response) {
-            _this2.settings.success(response);
-
-            resolve(response);
-          }
-        });
-      });
-    }
-  }, {
-    key: "updateAPI",
-    value: function updateAPI() {
       // Used to begin the URL parameters
       this.api.prefix = '?'; // Used to save our default api URL
 
@@ -165,15 +154,28 @@ var Filters = /*#__PURE__*/function () {
         }
 
         ;
-      } // Return the API
+      } // Start the filter function
 
 
-      return this.api;
+      return new Promise(function (resolve, reject) {
+        (0, _meteora.ajax)({
+          url: _this2.api.url,
+          method: 'GET',
+          error: function error(response) {
+            return reject(response);
+          },
+          success: function success(response) {
+            _this2.settings.success(response);
+
+            resolve(response);
+          }
+        });
+      });
     }
   }, {
     key: "updateURL",
     value: function updateURL(url) {
-      window.history.replaceState({}, "filters", url);
+      window.history.replaceState({}, "filters", url || this.api.segmentURL);
     }
   }]);
 
