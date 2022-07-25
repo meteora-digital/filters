@@ -1,6 +1,6 @@
 # Filters
 
-A class to make ajax (no jquery) requests super easy
+A class to make URL Paramter XHR Requests super easy
 
 #### Note: version 2.0.0 includes breaking changes since the previous version 1.0.0
 #### Note: version 1.0.0 includes breaking changes since the previous beta version 0.1.1
@@ -80,11 +80,11 @@ Filter.add('colour', 'green');
 Remove data from the filters object
 
 ```javascript
-Filter.add({
+Filter.remove({
   colour: 'red',
 });
 
-Filter.add('colour', 'red');
+Filter.remove('colour', 'red');
 ```
 
 ```clear()```
@@ -100,7 +100,7 @@ Filter.clear();
 Make the XHR Request to load new content
 
 ```javascript
-Filter.updateURL(Filter.api.segmentURL);
+Filter.apply();
 ```
 
 ```updateURL()```
