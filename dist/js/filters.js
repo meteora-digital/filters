@@ -5,43 +5,45 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _meteora = require("meteora");
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-/*------------------------------------------------------------------
-Filters
-------------------------------------------------------------------*/
-var Filters = /*#__PURE__*/function () {
-  function Filters() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+/* ---------------------------------------------
+░░░░░░░ ░░ ░░   ░░░░░░░░ ░░░░░░░ ░░░░░░  ░░░░░░░
+▒▒      ▒▒ ▒▒      ▒▒    ▒▒      ▒▒   ▒▒ ▒▒     
+▒▒▒▒▒   ▒▒ ▒▒      ▒▒    ▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒▒▒
+▓▓      ▓▓ ▓▓      ▓▓    ▓▓      ▓▓   ▓▓      ▓▓
+██      ██ ███████ ██    ███████ ██   ██ ███████
 
-    _classCallCheck(this, Filters);
+This will act as our filtering engine. We will 
+pass in filters, then call apply(). an xhr 
+request will be sent in the form of URL parameters,
+the response will be returned and accessible via
+the on('success', (response) => {}) method.
+
+---------------------------------------------- */
+var FiltersController = /*#__PURE__*/function () {
+  function FiltersController() {
+    var api = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/';
+
+    _classCallCheck(this, FiltersController);
 
     // This will be used for out URL creation
     this.api = {}; // Where we will store the filter parameters
 
-    this.value = {}; // Our user settings
+    this.value = {}; // Store the events here
+
+    this.events = {}; // Our user settings
 
     this.settings = {
-      api: '/',
-      // The success function will be added in the global scope. It returns the ajax response
-      success: function success(response) {
-        return console.log(response);
-      }
-    }; // ObjectAssign all the user's options
-
-    for (var key in this.settings) {
-      // Just check if the key exists in the user's options and if it does override the defaults
-      if (this.settings.hasOwnProperty(key) && options.hasOwnProperty(key)) this.settings[key] = options[key];
-    }
+      api: api
+    };
   }
 
-  _createClass(Filters, [{
+  _createClass(FiltersController, [{
     key: "set",
     value: function set() {
       var parameter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -56,6 +58,8 @@ var Filters = /*#__PURE__*/function () {
           if (parameter.hasOwnProperty(key)) this.set(key, parameter[key]);
         }
       }
+
+      this.callback('set', this.value);
     }
   }, {
     key: "add",
@@ -84,6 +88,8 @@ var Filters = /*#__PURE__*/function () {
           if (parameter.hasOwnProperty(key)) this.add(key, parameter[key]);
         }
       }
+
+      this.callback('add', this.value);
     }
   }, {
     key: "remove",
@@ -119,12 +125,15 @@ var Filters = /*#__PURE__*/function () {
           console.log(err);
         }
       }
+
+      this.callback('remove', this.value);
     }
   }, {
     key: "clear",
     value: function clear() {
       // Clear all filters
       this.value = {};
+      this.callback('clear', this.value);
     }
   }, {
     key: "apply",
@@ -154,32 +163,65 @@ var Filters = /*#__PURE__*/function () {
         }
 
         ;
-      } // Start the filter function
+      } // Set up a new xhr request to post the URL parameters
 
 
-      return new Promise(function (resolve, reject) {
-        (0, _meteora.ajax)({
-          url: _this2.api.url,
-          method: 'GET',
-          error: function error(response) {
-            return reject(response);
-          },
-          success: function success(response) {
-            _this2.settings.success(response);
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', this.api.url, true); // On success
 
-            resolve(response);
-          }
-        });
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          _this2.success(xhr.responseText);
+        } else {
+          _this2.error(xhr.status);
+        }
+      }; // Send the request
+
+
+      xhr.send();
+      this.callback('apply', {
+        url: this.api.url,
+        segmentURL: this.api.segmentURL
       });
     }
   }, {
     key: "updateURL",
     value: function updateURL(url) {
       window.history.replaceState({}, "filters", url || this.api.segmentURL);
+      this.callback('updateURL');
+    }
+  }, {
+    key: "success",
+    value: function success(response) {
+      this.callback('success', response);
+    }
+  }, {
+    key: "error",
+    value: function error(status) {
+      this.callback('error', status);
+    }
+  }, {
+    key: "callback",
+    value: function callback(type) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      // run the callback functions
+      if (this.events[type]) this.events[type].forEach(function (event) {
+        return event(data);
+      });
+    }
+  }, {
+    key: "on",
+    value: function on(event, func) {
+      // If we loaded an event and it's not the on event and we also loaded a function
+      if (event && event != 'on' && event != 'callback' && this[event] && func && typeof func == 'function') {
+        if (this.events[event] == undefined) this.events[event] = []; // Push a new event to the event array
+
+        this.events[event].push(func);
+      }
     }
   }]);
 
-  return Filters;
+  return FiltersController;
 }();
 
-exports["default"] = Filters;
+exports["default"] = FiltersController;
