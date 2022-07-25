@@ -1,38 +1,28 @@
-/*------------------------------------------------------------------
-This will act as our filtering engine. We will pass in filters,
-Then call apply(). an ajax request will be sent in the form of
-URL parameters, the response will be returned to the gobal scope.
-------------------------------------------------------------------*/
+/* ---------------------------------------------
+░░░░░░░ ░░ ░░   ░░░░░░░░ ░░░░░░░ ░░░░░░  ░░░░░░░
+▒▒      ▒▒ ▒▒      ▒▒    ▒▒      ▒▒   ▒▒ ▒▒     
+▒▒▒▒▒   ▒▒ ▒▒      ▒▒    ▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒▒▒
+▓▓      ▓▓ ▓▓      ▓▓    ▓▓      ▓▓   ▓▓      ▓▓
+██      ██ ███████ ██    ███████ ██   ██ ███████
 
-/*------------------------------------------------------------------
-Import External Modules
-------------------------------------------------------------------*/
+This will act as our filtering engine. We will 
+pass in filters, then call apply(). an xhr 
+request will be sent in the form of URL parameters,
+the response will be returned and accessible via
+the on('success', (response) => {}) method.
 
-import { ajax } from 'meteora';
+---------------------------------------------- */
 
-/*------------------------------------------------------------------
-Filters
-------------------------------------------------------------------*/
-
-export default class Filters {
-  constructor(options = {}) {
+export default class FiltersController {
+  constructor(api = '/') {
     // This will be used for out URL creation
     this.api = {};
     // Where we will store the filter parameters
     this.value = {};
-
+    // Store the events here
+    this.events = {};
     // Our user settings
-    this.settings = {
-      api: '/',
-      // The success function will be added in the global scope. It returns the ajax response
-      success: (response) => console.log(response),
-    };
-
-    // ObjectAssign all the user's options
-    for (let key in this.settings) {
-      // Just check if the key exists in the user's options and if it does override the defaults
-      if (this.settings.hasOwnProperty(key) && options.hasOwnProperty(key)) this.settings[key] = options[key];
-    }
+    this.settings = { api };
   }
 
   set(parameter = {}, value = null) {
@@ -45,6 +35,8 @@ export default class Filters {
         if (parameter.hasOwnProperty(key)) this.set(key, parameter[key]);
       }
     }
+
+    this.callback('set', this.value);
   }
 
   add(parameter = {}, value = null) {
@@ -67,6 +59,8 @@ export default class Filters {
         if (parameter.hasOwnProperty(key)) this.add(key, parameter[key]);
       }
     }
+
+    this.callback('add', this.value);
   }
 
   remove(parameter = {}, value = null) {
@@ -105,11 +99,15 @@ export default class Filters {
         }
       } catch(err) { console.log(err) }
     }
+
+    this.callback('remove', this.value);
   }
 
   clear() {
     // Clear all filters
     this.value = {};
+
+    this.callback('clear', this.value);
   }
 
   apply() {
@@ -138,21 +136,52 @@ export default class Filters {
       };
     }
 
-    // Start the filter function
-    return new Promise((resolve, reject) => {
-      ajax({
-        url: this.api.url,
-        method: 'GET',
-        error: (response) => reject(response),
-        success: (response) => {
-          this.settings.success(response);
-          resolve(response);
-        },
-      });
-    })
+    // Set up a new xhr request to post the URL parameters
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', this.api.url, true);
+
+    // On success
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        this.success(xhr.responseText);
+      } else {
+        this.error(xhr.status);
+      }
+    }
+
+    // Send the request
+    xhr.send();
+
+    this.callback('apply', {
+      url: this.api.url,
+      segmentURL: this.api.segmentURL
+    });
   }
 
   updateURL(url) {
     window.history.replaceState({}, "filters", url || this.api.segmentURL);
+    this.callback('updateURL');
+  }
+
+  success(response) {
+    this.callback('success', response);
+  }
+
+  error(status) {
+    this.callback('error', status);
+  }
+
+  callback(type, data = false) {
+    // run the callback functions
+    if (this.events[type]) this.events[type].forEach((event) => event(data));
+  }
+
+  on(event, func) {
+    // If we loaded an event and it's not the on event and we also loaded a function
+    if (event && event != 'on' && event != 'callback' && this[event] && func && typeof func == 'function') {
+      if (this.events[event] == undefined) this.events[event] = [];
+      // Push a new event to the event array
+      this.events[event].push(func);
+    }
   }
 }

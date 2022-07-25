@@ -1,7 +1,7 @@
 {
   "name": "@meteora-digital/filters",
   "version": "1.0.0",
-  "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An ajax (No this doesn't use jQuery) request will be sent in the form of URL parameters, the response will be returned to the gobal scope.",
+  "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An xhr request will be sent in the form of URL parameters, the response will be accessed via the on('success', (response) => {}) method.",
   "main": "dist/js/filters.js",
   "scripts": {
     "test": "npm i && gulp"
@@ -17,9 +17,7 @@
   ],
   "author": "Emmanuel Davies",
   "license": "MIT",
-  "dependencies": {
-    "meteora": "latest"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",

@@ -2,6 +2,7 @@
 
 A class to make ajax (no jquery) requests super easy
 
+#### Note: version 2.0.0 includes breaking changes since the previous version 1.0.0
 #### Note: version 1.0.0 includes breaking changes since the previous beta version 0.1.1
 
 ## Installation
@@ -24,81 +25,102 @@ yarn add @meteora-digital/filters
 ```
 
 ```es6
-import Filters from '@meteora-digital/filters';
+import FiltersController from '@meteora-digital/filters';
 
-const myFilter = new Filter({
-  success: (response) => {
-    console.log(response);
-  }
-});
+const Filter = new FiltersController('/my/endpoint');
+const select = document.querySelector('select');
 
-document.querySelector('.js-filter--select').addEventListener('change', () => {
-  myFilter.set(select.name, select.value);
+Filter.on('success', (response) => {
+  // do something with the response
+})
+
+select.addEventListener('change', () => {
+  Filter.set(select.name, select.value);
+  Filter.apply();
 });
 ```
 
-## Options
+## Arguments
 
-| Option | Type | Description |
+| Argument | Type | Description |
 |--------|------|-------------|
-| api | string | This is the URL that will be used in the ajax call | 
-| success | function | The function you want to run once the data has been received |
+| api | string | This is the URL that will be used in the ajax call |
 
 ## Methods
 
 First argument should either be an object or a string. The second argument will only be used if the first argument is a string.
 The second argument can either be a string or an array of strings.
 
-```set```
+```set()```
 
 This will remove any current values in this parameter and set it to a specific value in the value object.
 
 ```javascript
-myFilter.set({
+Filter.set({
   colour: ['purple', 'red', 'blue'],
 });
 
-myFilter.set('colour', ['purple', 'red', 'blue']);
+Filter.set('colour', ['purple', 'red', 'blue']);
 ```
 
-```add```
+```add()```
 
 Add more values to the filters object
 
 ```javascript
-myFilter.add({
+Filter.add({
   colour: 'green',
 });
 
-myFilter.add('colour', 'green');
+Filter.add('colour', 'green');
 ```
 
-```remove```
+```remove()```
 
 Remove data from the filters object
 
 ```javascript
-myFilter.add({
+Filter.add({
   colour: 'red',
 });
 
-myFilter.add('colour', 'red');
+Filter.add('colour', 'red');
 ```
 
-```clear```
+```clear()```
 
 Remove all data from the filters object
 
 ```javascript
-myFilter.clear();
+Filter.clear();
 ```
 
-```updateURL```
+```apply()```
+
+Make the XHR Request to load new content
+
+```javascript
+Filter.updateURL(Filter.api.segmentURL);
+```
+
+```updateURL()```
 
 Replace the history state and update the URL to a string
 
 ```javascript
-myFilter.updateURL(myFilter.api.segmentURL);
+Filter.updateURL(Filter.api.segmentURL);
+```
+
+## Events
+
+Each method has it's own event that is fired when the method is called. These can be accessed using the on() method
+
+```on()```
+
+```javascript
+Filter.on('success', (response) => {
+  // do something with the response
+});
 ```
 
 ## License
