@@ -80,7 +80,7 @@ export default class FiltersController {
         if (this.value[parameter].length === 0) delete this.value[parameter];
       }
 
-      else if (this.value[parameter]) {
+      else if (this.value[parameter] && value == null) {
         // Remove the parameter
         delete this.value[parameter];
       }

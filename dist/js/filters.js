@@ -108,7 +108,7 @@ var FiltersController = /*#__PURE__*/function () {
           this.value[parameter].splice(this.value[parameter].indexOf(value), 1); // If the parameter array is empty, delete it
 
           if (this.value[parameter].length === 0) delete this.value[parameter];
-        } else if (this.value[parameter]) {
+        } else if (this.value[parameter] && value == null) {
           // Remove the parameter
           delete this.value[parameter];
         }
