@@ -40,7 +40,9 @@ var FiltersController = /*#__PURE__*/function () {
 
     this.settings = {
       api: api
-    };
+    }; // Our xhr request
+
+    this.xhr = new XMLHttpRequest();
   }
 
   _createClass(FiltersController, [{
@@ -163,22 +165,22 @@ var FiltersController = /*#__PURE__*/function () {
         }
 
         ;
-      } // Set up a new xhr request to post the URL parameters
+      } // Abort the previous request
 
 
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', this.api.url, true); // On success
+      this.xhr.abort();
+      this.xhr.open('GET', this.api.url, true); // On success
 
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          _this2.success(xhr.responseText);
+      this.xhr.onload = function () {
+        if (_this2.xhr.status === 200) {
+          _this2.success(_this2.xhr.responseText);
         } else {
-          _this2.error(xhr.status);
+          _this2.error(_this2.xhr.status);
         }
       }; // Send the request
 
 
-      xhr.send();
+      this.xhr.send();
       this.callback('apply', {
         url: this.api.url,
         segmentURL: this.api.segmentURL

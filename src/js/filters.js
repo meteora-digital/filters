@@ -23,6 +23,8 @@ export default class FiltersController {
     this.events = {};
     // Our user settings
     this.settings = { api };
+    // Our xhr request
+    this.xhr = new XMLHttpRequest();
   }
 
   set(parameter = {}, value = null) {
@@ -43,7 +45,7 @@ export default class FiltersController {
     if (typeof parameter === 'string' || typeof parameter === 'number') {
       // If we dont have this parameter yet, create it as an array
       if (this.value[parameter] == undefined) this.value[parameter] = [];
-        
+
       if (Array.isArray(value)) {
         value.forEach((value) => {
           // If the filter parameter value does not contain this value, then add it
@@ -97,7 +99,7 @@ export default class FiltersController {
         for (let key in parameter) {
           if (parameter.hasOwnProperty(key)) this.remove(key, parameter[key]);
         }
-      } catch(err) { console.log(err) }
+      } catch (err) { console.log(err) }
     }
 
     this.callback('remove', this.value);
@@ -136,21 +138,22 @@ export default class FiltersController {
       };
     }
 
-    // Set up a new xhr request to post the URL parameters
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', this.api.url, true);
+    // Abort the previous request
+    this.xhr.abort();
+
+    this.xhr.open('GET', this.api.url, true);
 
     // On success
-    xhr.onload = () => {
-      if (xhr.status === 200) {
-        this.success(xhr.responseText);
+    this.xhr.onload = () => {
+      if (this.xhr.status === 200) {
+        this.success(this.xhr.responseText);
       } else {
-        this.error(xhr.status);
+        this.error(this.xhr.status);
       }
     }
 
     // Send the request
-    xhr.send();
+    this.xhr.send();
 
     this.callback('apply', {
       url: this.api.url,
