@@ -38,6 +38,10 @@ export default class FiltersController {
       }
     }
 
+    // Trigger the change method
+    this.change();
+
+    // Call the set callback
     this.callback('set', this.value);
   }
 
@@ -62,6 +66,10 @@ export default class FiltersController {
       }
     }
 
+    // Trigger the change method
+    this.change();
+
+    // Call the add callback
     this.callback('add', this.value);
   }
 
@@ -102,6 +110,10 @@ export default class FiltersController {
       } catch (err) { console.log(err) }
     }
 
+    // Trigger the change method
+    this.change();
+
+    // Call the remove callback
     this.callback('remove', this.value);
   }
 
@@ -109,7 +121,15 @@ export default class FiltersController {
     // Clear all filters
     this.value = {};
 
+    // Trigger the change method
+    this.change();
+
+    // Call the clear callback
     this.callback('clear', this.value);
+  }
+
+  change() {
+    this.callback('change', this.value);
   }
 
   apply() {

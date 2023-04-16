@@ -59,7 +59,10 @@ var FiltersController = /*#__PURE__*/function () {
         for (var key in parameter) {
           if (parameter.hasOwnProperty(key)) this.set(key, parameter[key]);
         }
-      }
+      } // Trigger the change method
+
+
+      this.change(); // Call the set callback
 
       this.callback('set', this.value);
     }
@@ -89,7 +92,10 @@ var FiltersController = /*#__PURE__*/function () {
         for (var key in parameter) {
           if (parameter.hasOwnProperty(key)) this.add(key, parameter[key]);
         }
-      }
+      } // Trigger the change method
+
+
+      this.change(); // Call the add callback
 
       this.callback('add', this.value);
     }
@@ -126,7 +132,10 @@ var FiltersController = /*#__PURE__*/function () {
         } catch (err) {
           console.log(err);
         }
-      }
+      } // Trigger the change method
+
+
+      this.change(); // Call the remove callback
 
       this.callback('remove', this.value);
     }
@@ -134,8 +143,16 @@ var FiltersController = /*#__PURE__*/function () {
     key: "clear",
     value: function clear() {
       // Clear all filters
-      this.value = {};
+      this.value = {}; // Trigger the change method
+
+      this.change(); // Call the clear callback
+
       this.callback('clear', this.value);
+    }
+  }, {
+    key: "change",
+    value: function change() {
+      this.callback('change', this.value);
     }
   }, {
     key: "apply",

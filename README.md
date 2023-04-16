@@ -121,6 +121,10 @@ Each method has it's own event that is fired when the method is called. These ca
 Filter.on('success', (response) => {
   // do something with the response
 });
+
+Filter.on('change', (value) => {
+  // do something when the filters changes
+});
 ```
 
 ## License
