@@ -29,11 +29,6 @@ export default class FiltersController {
     this.headers = Object.assign({
       'x-requested-with': 'XMLHttpRequest',
     }, headers);
-
-    // Set the XHR headers
-    Object.keys(this.headers).forEach((key) => {
-      this.xhr.setRequestHeader(key, this.headers[key]);
-    });
   }
 
   set(parameter = {}, value = null) {
@@ -171,6 +166,11 @@ export default class FiltersController {
     this.xhr.abort();
 
     this.xhr.open('GET', this.api.url, true);
+
+    // Set the XHR headers
+    Object.keys(this.headers).forEach((key) => {
+      this.xhr.setRequestHeader(key, this.headers[key]);
+    });
 
     // On success
     this.xhr.onload = () => {

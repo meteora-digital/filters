@@ -27,8 +27,6 @@ the on('success', (response) => {}) method.
 ---------------------------------------------- */
 var FiltersController = /*#__PURE__*/function () {
   function FiltersController() {
-    var _this = this;
-
     var api = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/';
     var headers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -48,11 +46,7 @@ var FiltersController = /*#__PURE__*/function () {
     this.xhr = new XMLHttpRequest();
     this.headers = Object.assign({
       'x-requested-with': 'XMLHttpRequest'
-    }, headers); // Set the XHR headers
-
-    Object.keys(this.headers).forEach(function (key) {
-      _this.xhr.setRequestHeader(key, _this.headers[key]);
-    });
+    }, headers);
   }
 
   _createClass(FiltersController, [{
@@ -79,7 +73,7 @@ var FiltersController = /*#__PURE__*/function () {
   }, {
     key: "add",
     value: function add() {
-      var _this2 = this;
+      var _this = this;
 
       var parameter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -91,7 +85,7 @@ var FiltersController = /*#__PURE__*/function () {
         if (Array.isArray(value)) {
           value.forEach(function (value) {
             // If the filter parameter value does not contain this value, then add it
-            if (_this2.value[parameter].indexOf(value) == -1) _this2.value[parameter].push(value);
+            if (_this.value[parameter].indexOf(value) == -1) _this.value[parameter].push(value);
           });
         } else {
           // If the parameter value is not an array
@@ -167,7 +161,7 @@ var FiltersController = /*#__PURE__*/function () {
   }, {
     key: "apply",
     value: function apply() {
-      var _this3 = this;
+      var _this2 = this;
 
       // Used to begin the URL parameters
       this.api.prefix = '?'; // Used to save our default api URL
@@ -196,13 +190,17 @@ var FiltersController = /*#__PURE__*/function () {
 
 
       this.xhr.abort();
-      this.xhr.open('GET', this.api.url, true); // On success
+      this.xhr.open('GET', this.api.url, true); // Set the XHR headers
+
+      Object.keys(this.headers).forEach(function (key) {
+        _this2.xhr.setRequestHeader(key, _this2.headers[key]);
+      }); // On success
 
       this.xhr.onload = function () {
-        if (_this3.xhr.status === 200) {
-          _this3.success(_this3.xhr.responseText);
+        if (_this2.xhr.status === 200) {
+          _this2.success(_this2.xhr.responseText);
         } else {
-          _this3.error(_this3.xhr.status);
+          _this2.error(_this2.xhr.status);
         }
       }; // Send the request
 
