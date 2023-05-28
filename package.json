@@ -1,6 +1,6 @@
 {
   "name": "@meteora-digital/filters",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An xhr request will be sent in the form of URL parameters, the response will be accessed via the on('success', (response) => {}) method.",
   "main": "dist/js/filters.js",
   "scripts": {
