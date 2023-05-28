@@ -14,7 +14,7 @@ the on('success', (response) => {}) method.
 ---------------------------------------------- */
 
 export default class FiltersController {
-  constructor(api = '/') {
+  constructor(api = '/', headers = {}) {
     // This will be used for out URL creation
     this.api = {};
     // Where we will store the filter parameters
@@ -25,6 +25,15 @@ export default class FiltersController {
     this.settings = { api };
     // Our xhr request
     this.xhr = new XMLHttpRequest();
+
+    this.headers = Object.assign({
+      'x-requested-with': 'XMLHttpRequest',
+    }, headers);
+
+    // Set the XHR headers
+    Object.keys(this.headers).forEach((key) => {
+      this.xhr.setRequestHeader(key, this.headers[key]);
+    });
   }
 
   set(parameter = {}, value = null) {
