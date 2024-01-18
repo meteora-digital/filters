@@ -2,9 +2,9 @@
   "name": "@meteora-digital/filters",
   "version": "2.3.1",
   "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An xhr request will be sent in the form of URL parameters, the response will be accessed via the on('success', (response) => {}) method.",
-  "main": "dist/js/filters.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "npm i && gulp"
+    "build": "webpack"
   },
   "keywords": [
     "JavaScript",
@@ -18,10 +18,11 @@
   "author": "Emmanuel Davies",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/preset-env": "^7.10.2",
-    "gulp": "^4.0.2",
-    "gulp-babel": "^8.0.0",
-    "gulp-plumber": "^1.2.1"
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
+    "babel-loader": "^9.1.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "worker-loader": "^3.0.8"
   }
 }

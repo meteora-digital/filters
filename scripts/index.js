@@ -1,12 +1,12 @@
 /* ---------------------------------------------
 ░░░░░░░ ░░ ░░   ░░░░░░░░ ░░░░░░░ ░░░░░░  ░░░░░░░
-▒▒      ▒▒ ▒▒      ▒▒    ▒▒      ▒▒   ▒▒ ▒▒     
+▒▒      ▒▒ ▒▒      ▒▒    ▒▒      ▒▒   ▒▒ ▒▒
 ▒▒▒▒▒   ▒▒ ▒▒      ▒▒    ▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒▒▒
 ▓▓      ▓▓ ▓▓      ▓▓    ▓▓      ▓▓   ▓▓      ▓▓
 ██      ██ ███████ ██    ███████ ██   ██ ███████
 
-This will act as our filtering engine. We will 
-pass in filters, then call apply(). an xhr 
+This will act as our filtering engine. We will
+pass in filters, then call apply(). an xhr
 request will be sent in the form of URL parameters,
 the response will be returned and accessible via
 the on('success', (response) => {}) method.
@@ -25,6 +25,35 @@ export default class FiltersController {
     this.settings = { api };
     // Our xhr request
     this.xhr = new XMLHttpRequest();
+
+    // Create a worker
+    this.worker = null;
+
+    // Store our scripts for the workers
+    this.scripts = {
+      xhr: `
+        self.onmessage = function (event) {
+          const xhr = new XMLHttpRequest();
+          const { url, headers } = event.data;
+
+          xhr.open('GET', url, true);
+
+          Object.keys(headers).forEach((key) => {
+            xhr.setRequestHeader(key, headers[key]);
+          });
+
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              self.postMessage({ status: 200, response: xhr.response });
+            } else {
+              self.postMessage({ status: xhr.status });
+            }
+          };
+
+          xhr.send();
+        };
+      `,
+    }
 
     this.headers = Object.assign({
       'x-requested-with': 'XMLHttpRequest',
@@ -163,26 +192,29 @@ export default class FiltersController {
     }
 
     // Abort the previous request
-    this.xhr.abort();
+    if (this.worker) this.worker.terminate();
 
-    this.xhr.open('GET', this.api.url, true);
+    // Create a new Blob object using the worker's code
+    const blob = new Blob([this.scripts.xhr], { type: 'application/javascript' });
+    // Create a new URL object from the Blob
+    const script = URL.createObjectURL(blob);
 
-    // Set the XHR headers
-    Object.keys(this.headers).forEach((key) => {
-      this.xhr.setRequestHeader(key, this.headers[key]);
-    });
+    // Create a new worker
+    this.worker = new Worker(script);
+
+    // Post the message to the worker
+    this.worker.postMessage({ url: this.api.url, headers: this.headers });
 
     // On success
-    this.xhr.onload = () => {
-      if (this.xhr.status === 200) {
-        this.success(this.xhr.responseText);
+    this.worker.onmessage = (event) => {
+      if (event.data.status === 200) {
+        // handle success
+        this.success(event.data.response);
       } else {
-        this.error(this.xhr.status);
+        // handle error
+        this.error(event.data.status);
       }
-    }
-
-    // Send the request
-    this.xhr.send();
+    };
 
     this.callback('apply', {
       url: this.api.url,
