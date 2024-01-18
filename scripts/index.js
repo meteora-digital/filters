@@ -23,8 +23,6 @@ export default class FiltersController {
     this.events = {};
     // Our user settings
     this.settings = { api };
-    // Our xhr request
-    this.xhr = new XMLHttpRequest();
 
     // Create a worker
     this.worker = null;
