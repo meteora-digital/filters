@@ -4,6 +4,7 @@
   "description": "This will act as our filtering engine. We will pass in filters, Then call apply(). An xhr request will be sent in the form of URL parameters, the response will be accessed via the on('success', (response) => {}) method.",
   "main": "dist/index.js",
   "scripts": {
+    "test": "npm i && npm run build",
     "build": "webpack"
   },
   "keywords": [
