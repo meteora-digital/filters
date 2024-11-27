@@ -163,7 +163,7 @@ export default class FiltersController {
     this.callback('change', this.value);
   }
 
-  apply() {
+  getApiUrl() {
     // Used to begin the URL parameters
     this.api.prefix = '?';
     // Used to save our default api URL
@@ -188,6 +188,11 @@ export default class FiltersController {
         this.api.index += 1;
       };
     }
+  }
+
+  apply() {
+    // Create the URL
+    this.getApiUrl();
 
     // Abort the previous request
     if (this.worker) this.worker.terminate();
@@ -221,6 +226,9 @@ export default class FiltersController {
   }
 
   updateURL(url) {
+    // Create the URL
+    this.getApiUrl();
+
     window.history.replaceState({}, "filters", url || this.api.segmentURL);
     this.callback('updateURL');
   }
